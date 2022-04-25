@@ -57,12 +57,19 @@ const SECONDARY_PDF_URL = "https://arxiv.org/pdf/1604.02480.pdf";
 const searchParams = new URLSearchParams(document.location.search);
 
 const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
+type secondProps = {
+  file2: string
+}
 
-class Secondary extends Component<{}, State> {
+class Secondary extends Component<secondProps, State> {
+  constructor(props: secondProps) {
+    super(props);
+  }
+
   state = {
-    url: initialUrl,
-    highlights: testHighlights[initialUrl]
-      ? [...testHighlights[initialUrl]]
+    url: this.props.file2,
+    highlights: testHighlights[this.props.file2]
+      ? [...testHighlights[this.props.file2]]
       : [],
   };
 
@@ -98,7 +105,11 @@ class Secondary extends Component<{}, State> {
       this.scrollToHighlightFromHash,
       false
     );
+    this.setState({  
+      highlights: testHighlights['/'+this.props.file2] ? [...testHighlights['/'+this.props.file2]] : [],
+    });
   }
+
 
   getHighlightById(id: string) {
     const { highlights } = this.state;
@@ -112,7 +123,7 @@ class Secondary extends Component<{}, State> {
     console.log("Saving highlight", highlight);
 
     this.setState({
-      highlights: [{ ...highlight, id: getNextId() }, ...highlights],
+      highlights: [{ ...highlight, id: getNextId(), matches:0 }, ...highlights],
     });
   }
 
@@ -193,10 +204,8 @@ class Secondary extends Component<{}, State> {
                     <Highlight
                       isScrolledTo={isScrolledTo}
                       position={highlight.position}
-                      comment={highlight.comment}   
-                      onClick={() => {
-                        updateHash(highlight);
-                      }}                   
+                      comment={highlight.comment} 
+                                      
                     />
                   ) : (
                     <AreaHighlight

@@ -17,8 +17,14 @@ import {Sidebar} from "./Sidebar";
 
 import "./style/AppExtn.css";
 import "./style/PrimaryPdfhighlight.css"
+import UploadButtons from "./fileupload/UploadButtons";
+import { PhotoCamera } from "@mui/icons-material";
+import { Stack,  Button, IconButton } from "@mui/material";
+import { styled } from '@mui/material/styles';
 
-
+const Input = styled('input')({
+  display: 'none',
+});
 
 const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 
@@ -27,8 +33,16 @@ interface State {
   highlights: Array<IHighlight>;
 }
 
+let clickCnt: number = 0;
 const updateHash = (highlight: IHighlight) => {
-  document.location.hash = `highlight-${highlight.id}`;
+ 
+  clickCnt = clickCnt + 1;
+  console.info('print hash::: '+ JSON.stringify(highlight))
+  //document.location.hash = `highlight-${highlight.id}`; 
+  document.location.hash = `highlight-${clickCnt}`; 
+  if(clickCnt === highlight.matches) {
+    clickCnt = 0;
+  }
 };
 
 const getNextId = () => String(Math.random()).slice(2);
@@ -57,14 +71,21 @@ const SECONDARY_PDF_URL = "https://arxiv.org/pdf/1604.02480.pdf";
 const searchParams = new URLSearchParams(document.location.search);
 
 const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
+type primaryProps = {
+  file1: string
+}
 
-class Primary extends Component<{}, State> {
-  state = {
-    url: initialUrl,
-    highlights: testHighlights[initialUrl]
-      ? [...testHighlights[initialUrl]]
+class Primary extends Component<primaryProps, State> {
+  constructor(props: primaryProps) {
+    super(props);
+  }
+state = {
+    url: this.props.file1,
+    highlights: testHighlights[this.props.file1]
+      ? [...testHighlights[this.props.file1]]
       : [],
-  };
+  };  
+  
 
   resetHighlights = () => {
     this.setState({
@@ -98,6 +119,12 @@ class Primary extends Component<{}, State> {
       this.scrollToHighlightFromHash,
       false
     );
+    
+    this.setState({
+      // highlights : [{"content":{"text":"The quick brown fox jumps over the lazy dog"},"position":{"boundingRect":{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648},"rects":[{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648}],"pageNumber":1},"comment":{"text":" highlight text 1 file 1 ","emoji":"😳"},"id":"1","matches":2}]
+      highlights : testHighlights['/'+this.props.file1]
+
+    })
   }
 
   getHighlightById(id: string) {
@@ -112,7 +139,7 @@ class Primary extends Component<{}, State> {
     console.log("Saving highlight", highlight);
 
     this.setState({
-      highlights: [{ ...highlight, id: getNextId() }, ...highlights],
+      highlights: [{ ...highlight, id: getNextId(), matches: 0 }, ...highlights],
     });
   }
 
@@ -139,14 +166,19 @@ class Primary extends Component<{}, State> {
     });
   }
 
+
+
+
+  
+
+
   render() {
     const { url, highlights } = this.state;
-
-    return (
-
-     
-      <div> 
-        <h1>File 1</h1> 
+    
+    return (     
+      <div>         
+    
+        <h1>File 1 </h1>        
           <PdfLoader url={url} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
