@@ -1,8 +1,13 @@
-import React from 'react'
+import { Button } from '@mui/material';
+import React, { ChangeEvent, useState } from 'react'
+import UploadButtons from '../fileupload/UploadButtons';
 
-function Home() {
+
+function Home() {  
+ 
+
   return (
-    <div>Home</div>
+    <h1>Home</h1>
   )
 }
 
