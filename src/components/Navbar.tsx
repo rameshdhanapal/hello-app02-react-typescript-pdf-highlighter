@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { SidebarData } from './SidebarData';
 import './Navbar.css';
 import { IconContext } from 'react-icons';
+import { AppBar, Typography } from '@mui/material';
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
@@ -16,9 +17,16 @@ function Navbar() {
       <IconContext.Provider value={{ color: '#fff' }}>
         <div className='navbar'>
           <Link to='#' className='menu-bars'>
-            <FaIcons.FaBars onClick={showSidebar} />
-          </Link>
+            <FaIcons.FaBars onClick={showSidebar} />            
+          </Link>   
+         <h1 className='menu-title'>
+         AUTOMATED CONTENT VERIFICATION 
+          </h1>
+                       
         </div>
+        
+       
+       
         <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
           <ul className='nav-menu-items' onClick={showSidebar}>
             <li className='navbar-toggle'>
