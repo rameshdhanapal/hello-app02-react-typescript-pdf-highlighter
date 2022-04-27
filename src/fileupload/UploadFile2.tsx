@@ -19,15 +19,15 @@ export default function UploadFile2(props: TestProps) {
       <>
       <h1>File2</h1>
     <Stack direction="row" alignItems="center" spacing={2}>
-      <label htmlFor="contained-button-file">
-        <Input accept="pdf/*" id="contained-button-file" multiple type="file"
+      <label htmlFor="contained-button-file2">
+        <Input accept="pdf/*" id="contained-button-file2" multiple type="file"
         onChange={props.handleChange} />
         <Button variant="contained" component="span">
           Upload
         </Button>
       </label>
-      <label htmlFor="icon-button-file">
-        <Input accept="image/*" id="icon-button-file" type="file" />
+      <label htmlFor="icon-button-file2">
+        <Input accept="image/*" id="icon-button-file2" type="file" />
         <IconButton color="primary" aria-label="upload picture" component="span">
           <PhotoCamera />
         </IconButton>
