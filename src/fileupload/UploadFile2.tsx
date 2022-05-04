@@ -17,7 +17,7 @@ export default function UploadFile2(props: TestProps) {
    
   return (
       <>
-      <h1>File2</h1>
+      <h1>File 2</h1>
     <Stack direction="row" alignItems="center" spacing={2}>
       <label htmlFor="contained-button-file2">
         <Input accept="pdf/*" id="contained-button-file2" multiple type="file"

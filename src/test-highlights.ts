@@ -1,4 +1,68 @@
 export const testHighlights = {
+  "/HITMER.pdf":[
+    {
+      content: {
+        text: "Problem # 1: CAD (ICD-414.00) (1C010-125. 10) jaw pain with exertion, had negative cath in 2012 in the setting of chest and jaw pain will get a stress test cardiac meds ",
+      },
+      position: {
+        boundingRect: {
+          x1: 31.98529052734375,
+          y1: 345.68682861328125,
+          x2: 497.41912841796875,
+          y2: 408.74932861328125,
+          width: 743.9999999999999,
+          height: 962.8235294117646,
+          pageNumber: 1,
+        },
+        rects: [
+          {
+             x1: 75.74737548828125,
+             y1: 345.68682861328125,
+             x2: 312.55462646484375,
+             y2: 359.68682861328125,
+             width: 743.9999999999999,
+             height: 962.8235294117646,
+             pageNumber: 1
+          },
+          {
+            x1: 75.74517822265625,
+            y1: 361.73370361328125,
+            x2: 497.41912841796875,
+            y2: 375.73370361328125,
+            width: 743.9999999999999,
+            height: 962.8235294117646,
+            pageNumber: 1
+          },
+          {
+            x1: 75.74887084960938,
+            y1: 377.619140625,
+            x2: 175.81475830078125,
+            y2: 391.619140625,
+            width: 743.9999999999999,
+            height: 962.8235294117646,
+            pageNumber: 1
+          },
+          {
+            x1: 31.98529052734375,
+            y1: 392.70245361328125,
+            x2: 143.58013916015625,
+            y2: 408.74932861328125,
+            width: 743.9999999999999,
+            height: 962.8235294117646,
+            pageNumber: 1
+          }
+      ],
+      pageNumber: 1
+      },
+      comment: {
+        text: " highlight text 1 file 2 ",
+        emoji: "😳",
+      },
+      id: "100",
+      matches:  3,
+    }
+  ],
+
   "/1.pdf": [
     {
       content: {
@@ -29,7 +93,7 @@ export const testHighlights = {
         text: " highlight text 1 file 1 ",
         emoji: "😳",
       },
-      id: "1",
+      id: "100",
       matches:  2,
     }
   ],
@@ -64,8 +128,8 @@ export const testHighlights = {
             text: " highlight text 1 file 1 ",
             emoji: "😳",
           },
-          id: "1",
-          matches:  0,
+          id: "100",
+          matches:  1,
         },
 
         {
@@ -99,8 +163,8 @@ export const testHighlights = {
               text: "highlight text 2 file 1",
               emoji: "😳",
           },
-          id: "2",
-          matches:  0,
+          id: "200",
+          matches:  3,
       }
       ]
 };

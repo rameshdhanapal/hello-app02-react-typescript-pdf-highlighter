@@ -16,9 +16,7 @@ import {Spinner}  from "./Spinner";
 import {Sidebar} from "./Sidebar";
 
 import './style/SecondPdfhighlight.css';
-
-
-
+import { Stack, Button,createTheme, ThemeProvider  } from "@mui/material";
 
 const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 
@@ -57,7 +55,8 @@ const SECONDARY_PDF_URL = "https://arxiv.org/pdf/1604.02480.pdf";
 const searchParams = new URLSearchParams(document.location.search);
 
 const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
-type secondProps = {
+type secondProps = { 
+  processNow2: boolean,
   file2: string
 }
 
@@ -105,10 +104,17 @@ class Secondary extends Component<secondProps, State> {
       this.scrollToHighlightFromHash,
       false
     );
+    console.info('primary processNow2 '+this.props.processNow2);
+    if(this.props.processNow2){
     this.setState({  
       highlights: testHighlights['/'+this.props.file2] ? [...testHighlights['/'+this.props.file2]] : [],
     });
+    }
+    
   }
+
+   
+
 
 
   getHighlightById(id: string) {
@@ -156,12 +162,19 @@ class Secondary extends Component<secondProps, State> {
   render() {
     const { url, highlights } = this.state;
 
-  //  console.log('print  I am in secondary tsk '+url)
-
     return (
 
-      <div>     
-       <h1>File 2</h1> 
+      <div>  
+         
+       {/* <h1 className="fileName2"> File 2 </h1>*/}         
+  {/*     <ThemeProvider theme={theme}>
+        <Button 
+          variant="contained"
+          onClick={this.buttonHandler}
+        >Process Now</Button>
+        </ThemeProvider>   
+    */}
+      
           <PdfLoader url={url} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter

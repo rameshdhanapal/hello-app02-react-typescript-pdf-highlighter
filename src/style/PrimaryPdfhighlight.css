@@ -20,3 +20,7 @@
     user-select: none;
     pointer-events: none;
   }
+
+  .fileName1 {
+    margin-bottom: 0px;
+  }

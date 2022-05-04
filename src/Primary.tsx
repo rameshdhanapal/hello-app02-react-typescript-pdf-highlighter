@@ -36,10 +36,36 @@ interface State {
 let clickCnt: number = 0;
 const updateHash = (highlight: IHighlight) => {
  
+  if(clickCnt === 0 ) {
+    sessionStorage.setItem('tmpId',highlight.id)
+  }
+
   clickCnt = clickCnt + 1;
   console.info('print hash::: '+ JSON.stringify(highlight))
+
+  if(clickCnt > 0 && highlight.id !== sessionStorage.getItem('tmpId')) {
+   
+    //document.location.hash = `highlight-${highlight.id}`; 
+  let highlighId : number = 1 + Number(highlight.id);
+  //  console.info('print before id: '+highlighId);
+    document.location.hash = `highlight-${highlighId}`; 
+   // console.info('print id: '+document.location.hash);
+   clickCnt = 0;
+   
+  }
+  console.info('session tmpId : '+sessionStorage.getItem('tmpId'));
+  console.info('highlight.id : '+highlight.id);
+ 
+
+  if(clickCnt > 0 && highlight.id === sessionStorage.getItem('tmpId')) {
   //document.location.hash = `highlight-${highlight.id}`; 
-  document.location.hash = `highlight-${clickCnt}`; 
+  let highlighId : number = clickCnt + Number(highlight.id);
+//  console.info('print before id: '+highlighId);
+  document.location.hash = `highlight-${highlighId}`; 
+ // console.info('print id: '+document.location.hash);
+  }
+  
+  
   if(clickCnt === highlight.matches) {
     clickCnt = 0;
   }
@@ -72,6 +98,7 @@ const searchParams = new URLSearchParams(document.location.search);
 
 const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 type primaryProps = {
+  processNow1: boolean,
   file1: string
 }
 
@@ -120,12 +147,27 @@ state = {
       false
     );
 
+    console.info('primary processNow1 '+this.props.processNow1);
+  if(this.props.processNow1){
     this.setState({
       // highlights : [{"content":{"text":"The quick brown fox jumps over the lazy dog"},"position":{"boundingRect":{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648},"rects":[{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648}],"pageNumber":1},"comment":{"text":" highlight text 1 file 1 ","emoji":"😳"},"id":"1","matches":2}]
       highlights : testHighlights['/'+this.props.file1]
 
     })
   }
+   
+  }
+
+ /* buttonHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    const button: HTMLButtonElement = event.currentTarget;
+    console.log('Ayyappa file1:: '+this.props.file1+ ' file2: '+this.props.file1)
+     this.setState({  
+      highlights: testHighlights['/'+this.props.file1] ? [...testHighlights['/'+this.props.file1]] : [],
+    });
+       
+  };*/
+  
 
   getHighlightById(id: string) {
     const { highlights } = this.state;
@@ -178,7 +220,7 @@ state = {
     return (     
       <div>         
     
-        <h1>File 1 </h1>        
+       {/*<h1 className="fileName1">File 1 </h1> */}         
           <PdfLoader url={url} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
