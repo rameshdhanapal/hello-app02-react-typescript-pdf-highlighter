@@ -17,6 +17,7 @@ import {Sidebar} from "./Sidebar";
 
 import './style/SecondPdfhighlight.css';
 import { Stack, Button,createTheme, ThemeProvider  } from "@mui/material";
+import ContentService from "./services/ContentService";
 
 const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 
@@ -104,11 +105,29 @@ class Secondary extends Component<secondProps, State> {
       this.scrollToHighlightFromHash,
       false
     );
-    console.info('primary processNow2 '+this.props.processNow2);
+    console.info('second processNow2 '+this.props.processNow2);
     if(this.props.processNow2){
-    this.setState({  
-      highlights: testHighlights['/'+this.props.file2] ? [...testHighlights['/'+this.props.file2]] : [],
+   // this.setState({  
+    //  highlights: testHighlights['/'+this.props.file2] ? [...testHighlights['/'+this.props.file2]] : [],
+    //});
+
+    let data: [] = [];
+    ContentService.getContentAll2().then((response: any) => {
+      console.log('print response::::: '+JSON.stringify(response))
+      data = response["data"]["/TRADITIONAL MER.pdf"];
+      //data = data["HITMER"];
+      this.setState({
+        highlights : data
+      })      
+      
+    })
+    .catch((e: Error) => {
+      console.log(e);
     });
+
+    console.log('print data: '+JSON.stringify(data))
+
+    
     }
     
   }

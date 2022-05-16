@@ -1,10 +1,12 @@
 import { Box, Button, createTheme, Divider, Grid, Stack, ThemeProvider } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { IHighlight } from 'react-pdf-highlighter'
+import { useNavigate } from 'react-router-dom'
 import UploadButtons from '../fileupload/UploadButtons'
 import UploadFile2 from '../fileupload/UploadFile2'
 import Primary from '../Primary'
 import Secondary from '../Secondary'
+import ContentService from '../services/ContentService'
 import { Sidebar } from '../Sidebar'
 
 
@@ -28,9 +30,39 @@ const theme = createTheme({
   },
 });
 
+const button1 = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          // Some CSS
+          fontSize: '1rem',
+          left: '400px',
+          top : '10px',  
+        }
+      }
+    }
+  }
+})
+
+const button2 = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          // Some CSS
+          fontSize: '1rem',
+          left: '1200px',
+          top : '10px',  
+        }
+      }
+    }
+  }
+})
+
 function Reports() {
-  const [primaryUrl, setPrimaryUrl] = useState<string | null> ('/1.pdf');
-  const [secondUrl, setSecondUrl] = useState<string | null> ('/2.pdf');
+  const [primaryUrl, setPrimaryUrl] = useState<string | null> ('/HITMER.pdf');
+  const [secondUrl, setSecondUrl] = useState<string | null> ('/TRADITIONAL MER.pdf');
   const [renderFile1,setRenderFile1] = useState<boolean>(false);
   const [renderFile2,setRenderFile2] = useState<boolean>(false);
   const [processFirstNow1, setProcessFirstNow1] = useState<boolean>(false);
@@ -38,7 +70,7 @@ function Reports() {
 
 
   const handleChange1 = (e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    ) => {      
       setPrimaryUrl(e.target.files![0].name);
       setRenderFile1(true)
     };
@@ -56,7 +88,16 @@ function Reports() {
     setProcessFirstNow1(true);
     setProcessSecondNow2(true); 
   };
-      
+
+  let navigate = useNavigate(); 
+  
+  const buttonHandler1 = (event: React.MouseEvent<HTMLButtonElement>) => {    
+    const button: HTMLButtonElement = event.currentTarget;
+    console.info('button clicked '+button+ 'renderFile1:  '+renderFile1+ ' renderFile2:: '+renderFile2)
+    navigate('/reports');
+  };
+
+ 
     
     
 
@@ -75,29 +116,40 @@ function Reports() {
           onClick={buttonHandler}
         >Process Now</Button>
         </ThemeProvider>   
-    <Stack
+
+        <Stack
       direction="row"
       divider={<Divider orientation="vertical" flexItem />}
       spacing={2}
       paddingLeft={30}
     
     >
-      <div style={{display: 'flex', width: '45vw', height: '90vh'}}>
 
-    { !renderFile1 && <UploadButtons handleChange={handleChange1}/> }
-     {renderFile1 &&<Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>} 
-     {renderFile1 && processFirstNow1&& <Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>} 
-
-      </div>
-      <div style={{display: 'flex', width: '40vw', height: '90vh' }}>
-     { !renderFile2 && <UploadFile2 handleChange={handleChange2} /> }
-       {renderFile2 && <Secondary file2={secondUrl!} processNow2={processSecondNow2} /> }
-       {renderFile2 && processSecondNow2 && <Secondary file2={secondUrl!} processNow2={processSecondNow2} /> }
-
-     
-
-      </div>
-    </Stack>
+    
+        <div style={{display: 'flex', width: '45vw', height: '81vh'}}>
+        { !renderFile1 && <UploadButtons handleChange={handleChange1}/> }
+        {renderFile1 && !processFirstNow1 && <Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>} 
+        {renderFile1 && processFirstNow1 && <Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>}         
+        </div>
+        
+        <div style={{display: 'flex', width: '40vw', height: '81vh' }}>
+        { !renderFile2 && <UploadFile2 handleChange={handleChange2} /> }
+        {renderFile2 &&  !processSecondNow2 &&  <Secondary file2={secondUrl!} processNow2={processSecondNow2} /> }
+        {renderFile2 && processSecondNow2 && <Secondary file2={secondUrl!} processNow2={processSecondNow2} /> }
+        </div>
+        </Stack>
+        <ThemeProvider theme={button1}>
+        <Button 
+          variant="contained"
+          onClick={buttonHandler1}
+        >Change File1</Button>
+        </ThemeProvider>   
+        <ThemeProvider theme={button2}>
+        <Button 
+          variant="contained"
+          onClick={buttonHandler}
+        >Change File2</Button>
+        </ThemeProvider>   
   </div>
   )
 }

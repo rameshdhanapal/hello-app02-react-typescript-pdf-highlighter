@@ -16,10 +16,9 @@ interface TestProps {
 export default function UploadButtons(props: TestProps) {
    
   return (
-    <>
-    <h1>File 1</h1>
-   
-    <Stack direction="row" alignItems="center" spacing={2}>
+    <div>
+      <h1>File 1</h1>
+      <Stack direction="row" alignItems="center" spacing={2}>
       <label htmlFor="contained-button-file1">
         <Input accept="pdf/*" id="contained-button-file1" multiple type="file"
         onChange={props.handleChange} />
@@ -34,6 +33,12 @@ export default function UploadButtons(props: TestProps) {
         </IconButton>
       </label>
     </Stack>
-    </>
+    </div>
+    
+    
+    
+    
+   
+  
   );
 }

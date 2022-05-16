@@ -16,7 +16,7 @@ interface TestProps {
 export default function UploadFile2(props: TestProps) {
    
   return (
-      <>
+      <div>
       <h1>File 2</h1>
     <Stack direction="row" alignItems="center" spacing={2}>
       <label htmlFor="contained-button-file2">
@@ -33,6 +33,7 @@ export default function UploadFile2(props: TestProps) {
         </IconButton>
       </label>
     </Stack>
-    </>
+    
+    </div>
   );
 }

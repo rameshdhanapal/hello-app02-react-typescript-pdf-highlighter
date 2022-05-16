@@ -21,6 +21,7 @@ import UploadButtons from "./fileupload/UploadButtons";
 import { PhotoCamera } from "@mui/icons-material";
 import { Stack,  Button, IconButton } from "@mui/material";
 import { styled } from '@mui/material/styles';
+import ContentService from "./services/ContentService";
 
 const Input = styled('input')({
   display: 'none',
@@ -149,11 +150,29 @@ state = {
 
     console.info('primary processNow1 '+this.props.processNow1);
   if(this.props.processNow1){
-    this.setState({
-      // highlights : [{"content":{"text":"The quick brown fox jumps over the lazy dog"},"position":{"boundingRect":{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648},"rects":[{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648}],"pageNumber":1},"comment":{"text":" highlight text 1 file 1 ","emoji":"😳"},"id":"1","matches":2}]
-      highlights : testHighlights['/'+this.props.file1]
-
+    
+    let data: [] = [];
+    ContentService.getContentAll().then((response: any) => {
+      //console.log('print response::::: '+JSON.stringify(response))
+      data = response["data"]["/HITMER.pdf"];
+      //data = data["HITMER"];
+      this.setState({
+        highlights : data
+      })      
+      
     })
+    .catch((e: Error) => {
+      console.log(e);
+    });
+
+   // console.log('print data: '+JSON.stringify(data))
+
+    //this.setState({
+      // highlights : [{"content":{"text":"The quick brown fox jumps over the lazy dog"},"position":{"boundingRect":{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648},"rects":[{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648}],"pageNumber":1},"comment":{"text":" highlight text 1 file 1 ","emoji":"😳"},"id":"1","matches":2}]
+      //highlights : testHighlights['/'+this.props.file1]
+     // highlights : data
+
+   // })
   }
    
   }
