@@ -23,42 +23,12 @@ const theme = createTheme({
           // Some CSS
           fontSize: '1rem',
           left: '1600px',
-          top : '2px',          
+          top : '-77px',          
         },
       },
     },
   },
 });
-
-const button1 = createTheme({
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          // Some CSS
-          fontSize: '1rem',
-          left: '400px',
-          top : '10px',  
-        }
-      }
-    }
-  }
-})
-
-const button2 = createTheme({
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          // Some CSS
-          fontSize: '1rem',
-          left: '1200px',
-          top : '10px',  
-        }
-      }
-    }
-  }
-})
 
 function Reports() {
   const [primaryUrl, setPrimaryUrl] = useState<string | null> ('/HITMER.pdf');
@@ -70,86 +40,61 @@ function Reports() {
 
 
   const handleChange1 = (e: React.ChangeEvent<HTMLInputElement>
-    ) => {      
-      setPrimaryUrl(e.target.files![0].name);
-      setRenderFile1(true)
+    ) => {            
+      setPrimaryUrl(e.target.files![0].name);  
+      setRenderFile1(true);    
+      setProcessFirstNow1(false);
+      //setProcessSecondNow2(false); 
     };
 
   const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>
     ) => {
       setSecondUrl(e.target.files![0].name);
-      setRenderFile2(true)
+      setRenderFile2(true);
+      //setProcessFirstNow1(false);
+      setProcessSecondNow2(false); 
     };
 
   const buttonHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const button: HTMLButtonElement = event.currentTarget;
-    console.info('button clicked '+button+ 'renderFile1:  '+renderFile1+ ' renderFile2:: '+renderFile2)
+    const button: HTMLButtonElement = event.currentTarget;        
     setProcessFirstNow1(true);
-    setProcessSecondNow2(true); 
+    setProcessSecondNow2(true);     
   };
 
-  let navigate = useNavigate(); 
-  
-  const buttonHandler1 = (event: React.MouseEvent<HTMLButtonElement>) => {    
-    const button: HTMLButtonElement = event.currentTarget;
-    console.info('button clicked '+button+ 'renderFile1:  '+renderFile1+ ' renderFile2:: '+renderFile2)
-    navigate('/reports');
-  };
-
- 
-    
-    
-
-  useEffect(() => {
-  
-    
-  },[])
-
-
- 
-  return (
+   return (
     <div>
+      <UploadButtons handleChange={handleChange1}/>
+      <UploadFile2 handleChange={handleChange2} /> 
       <ThemeProvider theme={theme}>
         <Button 
           variant="contained"
           onClick={buttonHandler}
         >Process Now</Button>
         </ThemeProvider>   
-
+ 
         <Stack
-      direction="row"
-      divider={<Divider orientation="vertical" flexItem />}
-      spacing={2}
-      paddingLeft={30}
-    
-    >
-
-    
+          direction="row"
+          divider={<Divider orientation="vertical" flexItem />}
+          spacing={2}
+          paddingLeft={30}    
+        >    
         <div style={{display: 'flex', width: '45vw', height: '81vh'}}>
-        { !renderFile1 && <UploadButtons handleChange={handleChange1}/> }
-        {renderFile1 && !processFirstNow1 && <Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>} 
+       
+        {/*renderFile1 && !processFirstNow1 && <Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>*/} 
+        {renderFile1 && !processFirstNow1 && <Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>}         
         {renderFile1 && processFirstNow1 && <Primary  file1={primaryUrl!} processNow1={processFirstNow1}/>}         
         </div>
         
-        <div style={{display: 'flex', width: '40vw', height: '81vh' }}>
-        { !renderFile2 && <UploadFile2 handleChange={handleChange2} /> }
+        <div style={{display: 'flex', width: '40vw', height: '81vh' }}>        
         {renderFile2 &&  !processSecondNow2 &&  <Secondary file2={secondUrl!} processNow2={processSecondNow2} /> }
         {renderFile2 && processSecondNow2 && <Secondary file2={secondUrl!} processNow2={processSecondNow2} /> }
+       
+        
+
         </div>
         </Stack>
-        <ThemeProvider theme={button1}>
-        <Button 
-          variant="contained"
-          onClick={buttonHandler1}
-        >Change File1</Button>
-        </ThemeProvider>   
-        <ThemeProvider theme={button2}>
-        <Button 
-          variant="contained"
-          onClick={buttonHandler}
-        >Change File2</Button>
-        </ThemeProvider>   
+       
   </div>
   )
 }

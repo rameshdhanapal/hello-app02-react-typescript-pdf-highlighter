@@ -24,6 +24,7 @@ const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 interface State {
   url: string;
   highlights: Array<IHighlight>;
+  filename2: string;
 }
 
 const updateHash = (highlight: IHighlight) => {
@@ -64,14 +65,13 @@ type secondProps = {
 class Secondary extends Component<secondProps, State> {
   constructor(props: secondProps) {
     super(props);
-  }
 
-  state = {
-    url: this.props.file2,
-    highlights: testHighlights[this.props.file2]
-      ? [...testHighlights[this.props.file2]]
-      : [],
-  };
+    this.state = {
+      url: this.props.file2,
+      highlights:[],
+      filename2: this.props.file2
+    };
+  } 
 
   resetHighlights = () => {
     this.setState({
@@ -105,15 +105,12 @@ class Secondary extends Component<secondProps, State> {
       this.scrollToHighlightFromHash,
       false
     );
-    console.info('second processNow2 '+this.props.processNow2);
+    
     if(this.props.processNow2){
-   // this.setState({  
-    //  highlights: testHighlights['/'+this.props.file2] ? [...testHighlights['/'+this.props.file2]] : [],
-    //});
-
+  
     let data: [] = [];
     ContentService.getContentAll2().then((response: any) => {
-      console.log('print response::::: '+JSON.stringify(response))
+
       data = response["data"]["/TRADITIONAL MER.pdf"];
       //data = data["HITMER"];
       this.setState({
@@ -125,16 +122,17 @@ class Secondary extends Component<secondProps, State> {
       console.log(e);
     });
 
-    console.log('print data: '+JSON.stringify(data))
-
-    
-    }
-    
+    }    
   }
 
-   
-
-
+  componentDidUpdate() {   
+    if(this.state.filename2 !== this.props.file2) {
+      this.setState({
+        filename2: this.props.file2,
+        highlights:[]
+      })
+    }
+  }
 
   getHighlightById(id: string) {
     const { highlights } = this.state;
@@ -176,25 +174,12 @@ class Secondary extends Component<secondProps, State> {
   }
 
 
-
-
   render() {
     const { url, highlights } = this.state;
 
     return (
-
-      <div>  
-         
-       {/* <h1 className="fileName2"> File 2 </h1>*/}         
-  {/*     <ThemeProvider theme={theme}>
-        <Button 
-          variant="contained"
-          onClick={this.buttonHandler}
-        >Process Now</Button>
-        </ThemeProvider>   
-    */}
-      
-          <PdfLoader url={url} beforeLoad={<Spinner />}>
+      <div>      
+          <PdfLoader url={this.state.filename2} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
                 pdfDocument={pdfDocument}

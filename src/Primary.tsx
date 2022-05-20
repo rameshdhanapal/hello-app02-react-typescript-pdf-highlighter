@@ -32,6 +32,7 @@ const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 interface State {
   url: string;
   highlights: Array<IHighlight>;
+  filename1:  string;
 }
 
 let clickCnt: number = 0;
@@ -47,25 +48,16 @@ const updateHash = (highlight: IHighlight) => {
   if(clickCnt > 0 && highlight.id !== sessionStorage.getItem('tmpId')) {
    
     //document.location.hash = `highlight-${highlight.id}`; 
-  let highlighId : number = 1 + Number(highlight.id);
-  //  console.info('print before id: '+highlighId);
-    document.location.hash = `highlight-${highlighId}`; 
-   // console.info('print id: '+document.location.hash);
-   clickCnt = 0;
-   
-  }
-  console.info('session tmpId : '+sessionStorage.getItem('tmpId'));
-  console.info('highlight.id : '+highlight.id);
- 
+  let highlighId : number = 1 + Number(highlight.id);  
+    document.location.hash = `highlight-${highlighId}`;   
+   clickCnt = 0;   
+  }  
 
   if(clickCnt > 0 && highlight.id === sessionStorage.getItem('tmpId')) {
   //document.location.hash = `highlight-${highlight.id}`; 
   let highlighId : number = clickCnt + Number(highlight.id);
-//  console.info('print before id: '+highlighId);
   document.location.hash = `highlight-${highlighId}`; 
- // console.info('print id: '+document.location.hash);
-  }
-  
+  }  
   
   if(clickCnt === highlight.matches) {
     clickCnt = 0;
@@ -105,15 +97,16 @@ type primaryProps = {
 
 class Primary extends Component<primaryProps, State> {
   constructor(props: primaryProps) {
-    super(props);
+    super(props); 
+    
+    this.state = {
+      url: this.props.file1,
+      highlights: [],
+      filename1: this.props.file1
+    };  
+
   }
-state = {
-    url: this.props.file1,
-    highlights: testHighlights[this.props.file1]
-      ? [...testHighlights[this.props.file1]]
-      : [],
-  };  
-  
+
 
   resetHighlights = () => {
     this.setState({
@@ -148,45 +141,42 @@ state = {
       false
     );
 
-    console.info('primary processNow1 '+this.props.processNow1);
-  if(this.props.processNow1){
-    
-    let data: [] = [];
-    ContentService.getContentAll().then((response: any) => {
-      //console.log('print response::::: '+JSON.stringify(response))
-      data = response["data"]["/HITMER.pdf"];
-      //data = data["HITMER"];
-      this.setState({
-        highlights : data
-      })      
-      
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-
-   // console.log('print data: '+JSON.stringify(data))
-
-    //this.setState({
-      // highlights : [{"content":{"text":"The quick brown fox jumps over the lazy dog"},"position":{"boundingRect":{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648},"rects":[{"x1":119.53515625,"y1":88.2354736328125,"x2":332.1571044921875,"y2":103.2354736328125,"width":744.0000000000001,"height":962.8235294117648}],"pageNumber":1},"comment":{"text":" highlight text 1 file 1 ","emoji":"😳"},"id":"1","matches":2}]
-      //highlights : testHighlights['/'+this.props.file1]
-     // highlights : data
-
-   // })
-  }
-   
-  }
-
- /* buttonHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    const button: HTMLButtonElement = event.currentTarget;
-    console.log('Ayyappa file1:: '+this.props.file1+ ' file2: '+this.props.file1)
-     this.setState({  
-      highlights: testHighlights['/'+this.props.file1] ? [...testHighlights['/'+this.props.file1]] : [],
-    });
-       
-  };*/
+    console.log('check process now in DidMount method: '+this.props.processNow1);
+    if(this.props.processNow1){    
   
+      let data: [] = [];
+      ContentService.getContentAll().then((response: any) => {
+        //console.log('print response::::: '+JSON.stringify(response))
+        data = response["data"]["/HITMER.pdf"];
+        //data = data["HITMER"];
+        this.setState({
+          highlights : data
+        })      
+        
+      })
+      .catch((e: Error) => {
+        console.log(e);
+      });
+
+      }
+
+
+  }
+
+  componentDidUpdate() {
+    console.log('check process now in Updated method: '+this.props.processNow1);
+    if(this.state.filename1 !== this.props.file1) {
+      this.setState({
+        filename1: this.props.file1,
+        highlights:[]
+      })
+    }   
+  }
+
+  
+
+
+
 
   getHighlightById(id: string) {
     const { highlights } = this.state;
@@ -227,20 +217,12 @@ state = {
     });
   }
 
-
-
-
-  
-
-
   render() {
-    const { url, highlights } = this.state;
-     //console.log('print  I am in primary tsk '+url)
+    const { url, highlights } = this.state;   
+     
     return (     
-      <div>         
-    
-       {/*<h1 className="fileName1">File 1 </h1> */}         
-          <PdfLoader url={url} beforeLoad={<Spinner />}>
+      <div>          
+          <PdfLoader url={this.state.filename1} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
                 pdfDocument={pdfDocument}
