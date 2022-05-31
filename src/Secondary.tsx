@@ -18,6 +18,7 @@ import {Sidebar} from "./Sidebar";
 import './style/SecondPdfhighlight.css';
 import { Stack, Button,createTheme, ThemeProvider  } from "@mui/material";
 import ContentService from "./services/ContentService";
+import axios from 'axios';
 
 const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 
@@ -25,6 +26,7 @@ interface State {
   url: string;
   highlights: Array<IHighlight>;
   filename2: string;
+  binarydata2: string | ArrayBuffer | null | undefined;
 }
 
 const updateHash = (highlight: IHighlight) => {
@@ -57,9 +59,10 @@ const SECONDARY_PDF_URL = "https://arxiv.org/pdf/1604.02480.pdf";
 const searchParams = new URLSearchParams(document.location.search);
 
 const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
-type secondProps = { 
+type secondProps = {
   processNow2: boolean,
-  file2: string
+  file2: string,
+  selectedFile2: File | null | undefined,
 }
 
 class Secondary extends Component<secondProps, State> {
@@ -69,9 +72,10 @@ class Secondary extends Component<secondProps, State> {
     this.state = {
       url: this.props.file2,
       highlights:[],
-      filename2: this.props.file2
+      filename2: this.props.file2,
+      binarydata2: undefined,
     };
-  } 
+  }
 
   resetHighlights = () => {
     this.setState({
@@ -105,9 +109,23 @@ class Secondary extends Component<secondProps, State> {
       this.scrollToHighlightFromHash,
       false
     );
-    
-    if(this.props.processNow2){
-  
+
+    if(this.props.selectedFile2) {
+      //file reader function for read the file
+      let fileReader2 = new FileReader();
+      fileReader2.readAsArrayBuffer(this.props.selectedFile2);
+      fileReader2.onload = () => {
+        //console.log(fileReader2.result);
+        this.setState({
+          filename2: this.props.file2,
+          highlights:[],
+          binarydata2: fileReader2.result
+        });
+      }
+    }
+
+    /*if(this.props.processNow2){
+
     let data: [] = [];
     ContentService.getContentAll2().then((response: any) => {
 
@@ -115,22 +133,53 @@ class Secondary extends Component<secondProps, State> {
       //data = data["HITMER"];
       this.setState({
         highlights : data
-      })      
-      
+      })
+
     })
     .catch((e: Error) => {
       console.log(e);
     });
 
-    }    
+    }*/
+
+    if(this.props.processNow2 && this.props.selectedFile2) {
+      let data: [] = [];
+
+      let formData = new FormData();
+      formData.append('file',this.props.selectedFile2)
+
+      axios.post('http://localhost:8080/uploadFile2API', formData)
+            .then(res => {
+              data = res["data"]["/TRADITIONAL MER.pdf"];
+
+              this.setState({
+                highlights : data
+              })
+
+            })
+            .catch((e: Error) => {
+              console.log(e);
+            });
+    }
+
+
   }
 
-  componentDidUpdate() {   
+  componentDidUpdate() {
     if(this.state.filename2 !== this.props.file2) {
-      this.setState({
-        filename2: this.props.file2,
-        highlights:[]
-      })
+      if(this.props.selectedFile2) {
+        //file reader function for read the file
+        let fileReader2 = new FileReader();
+        fileReader2.readAsArrayBuffer(this.props.selectedFile2);
+        fileReader2.onload = () => {
+          //console.log(fileReader2.result);
+          this.setState({
+            filename2: this.props.file2,
+            highlights:[],
+            binarydata2: fileReader2.result
+          });
+        }
+      }
     }
   }
 
@@ -175,11 +224,13 @@ class Secondary extends Component<secondProps, State> {
 
 
   render() {
-    const { url, highlights } = this.state;
-
+    const { binarydata2, highlights } = this.state;
+    if(!binarydata2){
+      return null;
+    }
     return (
-      <div>      
-          <PdfLoader url={this.state.filename2} beforeLoad={<Spinner />}>
+      <div>
+          <PdfLoader url={this.state.filename2} data={binarydata2} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
                 pdfDocument={pdfDocument}
@@ -223,8 +274,8 @@ class Secondary extends Component<secondProps, State> {
                     <Highlight
                       isScrolledTo={isScrolledTo}
                       position={highlight.position}
-                      comment={highlight.comment} 
-                                      
+                      comment={highlight.comment}
+
                     />
                   ) : (
                     <AreaHighlight
@@ -256,7 +307,7 @@ class Secondary extends Component<secondProps, State> {
               />
             )}
           </PdfLoader>
-        
+
           </div>
     );
   }

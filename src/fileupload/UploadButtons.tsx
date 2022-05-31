@@ -14,16 +14,16 @@ const file1button = createTheme({
           // Some CSS
           fontSize: '1rem',
           left: '300px',
-          top : '2px',  
+          top : '2px',
         }
       }
     },
     MuiIconButton: {
       styleOverrides: {
         root: {
-          left: '300px',         
+          left: '300px',
         }
-      }      
+      }
     },
   }
 })
@@ -32,27 +32,29 @@ const Input = styled('input')({
   display: 'none',
 });
 
-interface TestProps {  
+interface TestProps {
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export default function UploadButtons(props: TestProps) {
-   
+
   return (
     <div>
      <ThemeProvider theme={file1button}>
       <Stack direction="row" alignItems="center" spacing={2}>
       <label htmlFor="contained-button-file1">
         <Input accept="pdf/*" id="contained-button-file1" multiple type="file"
-        onChange={(e) => {         
-          props.handleChange(e) 
+        onChange={(e) => {
+          props.handleChange(e)
         }}/>
-        
+
+
+
           <Button variant="contained" component="span">
           File1 Upload
           </Button>
-       
-       
+
+
       </label>
       <label htmlFor="icon-button-file1">
         <Input accept="pdf/*" id="icon-button-file1" type="file" />
@@ -62,6 +64,6 @@ export default function UploadButtons(props: TestProps) {
       </label>
     </Stack>
     </ThemeProvider>
-    </div>  
+    </div>
   );
 }

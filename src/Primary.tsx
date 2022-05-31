@@ -22,6 +22,7 @@ import { PhotoCamera } from "@mui/icons-material";
 import { Stack,  Button, IconButton } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import ContentService from "./services/ContentService";
+import axios from 'axios';
 
 const Input = styled('input')({
   display: 'none',
@@ -33,11 +34,12 @@ interface State {
   url: string;
   highlights: Array<IHighlight>;
   filename1:  string;
+  binarydata1: string | ArrayBuffer | null | undefined;
 }
 
 let clickCnt: number = 0;
 const updateHash = (highlight: IHighlight) => {
- 
+
   if(clickCnt === 0 ) {
     sessionStorage.setItem('tmpId',highlight.id)
   }
@@ -46,19 +48,19 @@ const updateHash = (highlight: IHighlight) => {
   console.info('print hash::: '+ JSON.stringify(highlight))
 
   if(clickCnt > 0 && highlight.id !== sessionStorage.getItem('tmpId')) {
-   
-    //document.location.hash = `highlight-${highlight.id}`; 
-  let highlighId : number = 1 + Number(highlight.id);  
-    document.location.hash = `highlight-${highlighId}`;   
-   clickCnt = 0;   
-  }  
+
+    //document.location.hash = `highlight-${highlight.id}`;
+  let highlighId : number = 1 + Number(highlight.id);
+    document.location.hash = `highlight-${highlighId}`;
+   clickCnt = 0;
+  }
 
   if(clickCnt > 0 && highlight.id === sessionStorage.getItem('tmpId')) {
-  //document.location.hash = `highlight-${highlight.id}`; 
+  //document.location.hash = `highlight-${highlight.id}`;
   let highlighId : number = clickCnt + Number(highlight.id);
-  document.location.hash = `highlight-${highlighId}`; 
-  }  
-  
+  document.location.hash = `highlight-${highlighId}`;
+  }
+
   if(clickCnt === highlight.matches) {
     clickCnt = 0;
   }
@@ -92,18 +94,20 @@ const searchParams = new URLSearchParams(document.location.search);
 const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 type primaryProps = {
   processNow1: boolean,
-  file1: string
+  file1: string,
+  selectedFile1: File | null | undefined,
 }
 
 class Primary extends Component<primaryProps, State> {
   constructor(props: primaryProps) {
-    super(props); 
-    
+    super(props);
+
     this.state = {
       url: this.props.file1,
       highlights: [],
-      filename1: this.props.file1
-    };  
+      filename1: this.props.file1,
+      binarydata1: undefined,
+    };
 
   }
 
@@ -141,9 +145,22 @@ class Primary extends Component<primaryProps, State> {
       false
     );
 
-    console.log('check process now in DidMount method: '+this.props.processNow1);
-    if(this.props.processNow1){    
-  
+    if(this.props.selectedFile1) {
+      //file reader function for read the file
+      let fileReader1 = new FileReader();
+      fileReader1.readAsArrayBuffer(this.props.selectedFile1);
+      fileReader1.onload = () => {
+        //console.log(fileReader1.result);
+        this.setState({
+          filename1: this.props.file1,
+          highlights:[],
+          binarydata1: fileReader1.result
+        });
+      }
+    }
+
+    /*if(this.props.processNow1){
+
       let data: [] = [];
       ContentService.getContentAll().then((response: any) => {
         //console.log('print response::::: '+JSON.stringify(response))
@@ -151,29 +168,61 @@ class Primary extends Component<primaryProps, State> {
         //data = data["HITMER"];
         this.setState({
           highlights : data
-        })      
-        
+        })
+
       })
       .catch((e: Error) => {
         console.log(e);
       });
 
+      }*/
+
+      if(this.props.processNow1 && this.props.selectedFile1) {
+        let data: [] = [];
+
+        let formData = new FormData();
+        formData.append('file',this.props.selectedFile1)
+
+        axios.post('http://localhost:8080/uploadFile1API', formData)
+              .then(res => {
+                data = res["data"]["/HITMER.pdf"];
+
+                this.setState({
+                  highlights : data
+                })
+
+              })
+              .catch((e: Error) => {
+                console.log(e);
+              });
+      } else {
+        this.setState({
+          highlights : []
+        })
       }
 
 
   }
 
   componentDidUpdate() {
-    console.log('check process now in Updated method: '+this.props.processNow1);
     if(this.state.filename1 !== this.props.file1) {
-      this.setState({
-        filename1: this.props.file1,
-        highlights:[]
-      })
-    }   
+      if(this.props.selectedFile1) {
+        //file reader function for read the file
+        let fileReader1 = new FileReader();
+        fileReader1.readAsArrayBuffer(this.props.selectedFile1);
+        fileReader1.onload = () => {
+          //console.log(fileReader1.result);
+          this.setState({
+            filename1: this.props.file1,
+            highlights:[],
+            binarydata1: fileReader1.result
+          });
+        }
+      }
+    }
   }
 
-  
+
 
 
 
@@ -218,11 +267,14 @@ class Primary extends Component<primaryProps, State> {
   }
 
   render() {
-    const { url, highlights } = this.state;   
-     
-    return (     
-      <div>          
-          <PdfLoader url={this.state.filename1} beforeLoad={<Spinner />}>
+    const { binarydata1, highlights } = this.state;
+
+    if(!binarydata1) {
+      return null;
+    }
+    return (
+      <div>
+          <PdfLoader url={this.state.filename1} data={binarydata1} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
                 pdfDocument={pdfDocument}
@@ -301,7 +353,7 @@ class Primary extends Component<primaryProps, State> {
               />
             )}
           </PdfLoader>
-        
+
       </div>
     );
   }

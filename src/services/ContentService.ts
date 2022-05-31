@@ -19,6 +19,10 @@ const getContentAll2 = () => {
     return http.get<IResult>('/results2');
 }
 
+const getFileName = (name: string) => {
+    return http.get<IResult>(`/file/:${name}`)
+}
+
 
 
 const  ContentService = {
@@ -26,6 +30,7 @@ const  ContentService = {
     get,
     getContentAll,
     getContentAll2,
+    getFileName
 };
 
 export default ContentService;
